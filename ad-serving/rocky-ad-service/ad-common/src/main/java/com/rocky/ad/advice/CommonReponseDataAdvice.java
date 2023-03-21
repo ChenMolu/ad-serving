@@ -41,6 +41,7 @@ public class CommonReponseDataAdvice implements ResponseBodyAdvice<Object> {
 
     @Nullable
     @Override
+    @SuppressWarnings("all")
     public Object beforeBodyWrite(@Nullable Object o,
                                   MethodParameter methodParameter,
                                   MediaType mediaType,
