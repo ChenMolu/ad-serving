@@ -1,5 +1,6 @@
 package com.rocky.ad.service.impl;
 
+import com.netflix.discovery.converters.Auto;
 import com.rocky.ad.constant.Constants;
 import com.rocky.ad.dao.AdPlanRepository;
 import com.rocky.ad.dao.AdUnitRepository;
@@ -7,11 +8,13 @@ import com.rocky.ad.dao.CreativeRepository;
 import com.rocky.ad.dao.unit_condition.AdUnitDistrictRepository;
 import com.rocky.ad.dao.unit_condition.AdUnitItRepository;
 import com.rocky.ad.dao.unit_condition.AdUnitKeywordRepository;
+import com.rocky.ad.dao.unit_condition.CreativeUnitRepository;
 import com.rocky.ad.entity.AdPlan;
 import com.rocky.ad.entity.AdUnit;
 import com.rocky.ad.entity.unit_condition.AdUnitDistrict;
 import com.rocky.ad.entity.unit_condition.AdUnitIt;
 import com.rocky.ad.entity.unit_condition.AdUnitKeyword;
+import com.rocky.ad.entity.unit_condition.CreativeUnit;
 import com.rocky.ad.exception.AdException;
 import com.rocky.ad.service.IAdUnitService;
 import com.rocky.ad.vo.*;
@@ -33,14 +36,16 @@ public class AdUnitServiceimpl implements IAdUnitService {
     private final AdUnitItRepository unitItRepository;
     private final AdUnitDistrictRepository unitDistrictRepository;
     private final CreativeRepository creativeRepository;
+    private final CreativeUnitRepository creativeUnitRepository;
 
-    public AdUnitServiceimpl(AdPlanRepository planRepository, AdUnitRepository unitRepository, AdUnitKeywordRepository keywordRepository, AdUnitItRepository unitItRepository, AdUnitDistrictRepository unitDistrictRepository, CreativeRepository creativeRepository) {
+    public AdUnitServiceimpl(AdPlanRepository planRepository, AdUnitRepository unitRepository, AdUnitKeywordRepository keywordRepository, AdUnitItRepository unitItRepository, AdUnitDistrictRepository unitDistrictRepository, CreativeRepository creativeRepository, CreativeUnitRepository creativeUnitRepository) {
         this.planRepository = planRepository;
         this.unitRepository = unitRepository;
         this.keywordRepository = keywordRepository;
         this.unitItRepository = unitItRepository;
         this.unitDistrictRepository = unitDistrictRepository;
         this.creativeRepository = creativeRepository;
+        this.creativeUnitRepository = creativeUnitRepository;
     }
 
     @Override
@@ -128,6 +133,32 @@ public class AdUnitServiceimpl implements IAdUnitService {
                 .collect(Collectors.toList());
 
         return new AdUnitDistrictResponse(ids);
+    }
+
+    @Override
+    public CreativeUnitResponse createCreateUnit(CreativeUnitRequest request) throws AdException{
+        List<Long> unitIds = request.getUnitItems().stream()
+                .map(CreativeUnitRequest.CreativeUnitItem::getUnitId)
+                .collect(Collectors.toList());
+        List<Long> creativeIds = request.getUnitItems().stream()
+                .map(CreativeUnitRequest.CreativeUnitItem::getCreativeId)
+                .collect(Collectors.toList());
+
+        if (!(isRelatedUnitExist(unitIds) && isRelatedUnitExist(creativeIds))) {
+            throw new AdException(Constants.ErrorMsg.REQUEST_PARAM_ERROR);
+        }
+
+        List<CreativeUnit> creativeUnits = new ArrayList<>();
+        request.getUnitItems().forEach(i -> creativeUnits.add(
+                new CreativeUnit(i.getCreativeId(), i.getUnitId())
+        ));
+
+        List<Long> ids = creativeUnitRepository.saveAll(creativeUnits)
+                .stream()
+                .map(CreativeUnit::getId)
+                .collect(Collectors.toList());
+
+        return new CreativeUnitResponse(ids);
     }
 
     private boolean isRelatedUnitExist(List<Long> unitIds) {
