@@ -28,15 +28,10 @@ import java.util.stream.Collectors;
 public class AdUnitServiceimpl implements IAdUnitService {
 
     private final AdPlanRepository planRepository;
-
     private final AdUnitRepository unitRepository;
-
     private final AdUnitKeywordRepository keywordRepository;
-
     private final AdUnitItRepository unitItRepository;
-
     private final AdUnitDistrictRepository unitDistrictRepository;
-
     private final CreativeRepository creativeRepository;
 
     public AdUnitServiceimpl(AdPlanRepository planRepository, AdUnitRepository unitRepository, AdUnitKeywordRepository keywordRepository, AdUnitItRepository unitItRepository, AdUnitDistrictRepository unitDistrictRepository, CreativeRepository creativeRepository) {
