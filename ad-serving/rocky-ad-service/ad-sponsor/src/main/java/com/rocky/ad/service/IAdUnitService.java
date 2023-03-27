@@ -1,9 +1,7 @@
 package com.rocky.ad.service;
 
 import com.rocky.ad.exception.AdException;
-import com.rocky.ad.vo.AdUnitItRequest;
-import com.rocky.ad.vo.AdUnitRequest;
-import com.rocky.ad.vo.AdUnitResponse;
+import com.rocky.ad.vo.*;
 
 public interface IAdUnitService {
 
@@ -12,5 +10,12 @@ public interface IAdUnitService {
      * @param request
      * @return
      */
-    public AdUnitResponse createUnit(AdUnitRequest request) throws AdException;
+    AdUnitResponse createUnit(AdUnitRequest request) throws AdException;
+
+    AdUnitKeywordResponse createUnitKeyword(AdUnitKeywordRequest request) throws AdException;
+
+    AdUnitItResponse createUnitIt(AdUnitItRequest request) throws AdException;
+
+    AdUnitDistrictResponse createUnitDistrict(AdUnitDistrictRequest request) throws AdException;
+
 }
